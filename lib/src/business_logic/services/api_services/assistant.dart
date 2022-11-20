@@ -3,6 +3,7 @@ import 'package:betting_app/src/business_logic/models/fixture/date.dart';
 import 'package:betting_app/src/business_logic/models/standings/goals.dart';
 import 'package:betting_app/src/business_logic/services/http_request.dart';
 
+import '../../models/coverage.dart';
 import '../../models/fixture/coach.dart';
 import '../../models/fixture/event.dart';
 import 'package:collection/collection.dart';
@@ -31,7 +32,7 @@ class Assistant {
       try {
         var short = game['fixture']['status']['short'] ?? "";
 
-        if (short != 'PST' && short != 'CANC') {
+        // if (short != 'PST' && short != 'CANC') {
           var long = game['fixture']['status']['long'] ?? "";
           var time = game['fixture']['status']['elapsed'] ?? 0;
           var referee = game['fixture']['referee'] ?? "";
@@ -102,7 +103,7 @@ class Assistant {
               home, away, fixtureDate, venue, league, status);
 
           gamesList.add(fixture);
-        }
+        // }
       } catch (e, stacktrace) {
         print(e);
         print('Stacktrace: ' + stacktrace.toString());
@@ -134,7 +135,6 @@ class Assistant {
       List<Event> eventsList = [];
 
       for (var event in events) {
-        var gameEvent;
         var time = event['time']['elapsed'];
 
         var homeOrAway =
@@ -150,11 +150,9 @@ class Assistant {
         var extra = event['time']['extra'];
 
         if (player != null || type == 'Goal') {
-          gameEvent =
-              Event(half, player, type, detail, assister, homeOrAway, time, extra);
-          eventsList.add(gameEvent);
+          eventsList.add(Event(
+              half, player, type, detail, assister, homeOrAway, time, extra));
         }
-
       }
 
       return eventsList;
@@ -381,6 +379,21 @@ class Assistant {
   //   });
   // }
 
+  static Future<Coverage> getCoverage(Game game) async {
+    var response = (await HttpRequest.getData(
+            'leagues?id=${game.league.id}&season=${game.league.season}'))[0]
+        ['seasons'][0]['coverage'];
+
+    bool events = response['fixtures']['events'];
+    bool lineups = response['fixtures']['lineups'];
+    bool standings = response['standings'];
+    bool odds = response['odds'];
+    bool topScorers = response['top_scorers'];
+    bool topAssists = response['top_assist'];
+
+    return Coverage(events, lineups, standings, odds, topScorers, topAssists);
+  }
+
   static Future<List<Lineup>> getLineups(String fixtureId) async {
     List<Lineup> lineUps = [];
     var response =
@@ -417,4 +430,12 @@ class Assistant {
 
     return lineUps;
   }
+
+
+  static Future<List<Game>> getLeagueGames(League league) async {
+    var games = await getGames('fixtures?league=${league.id}&season=${league.season}');
+
+    return games;
+  }
+
 }

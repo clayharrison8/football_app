@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../business_logic/models/fixture/game.dart';
 import '../../business_logic/models/fixture/player.dart';
-import '../../business_logic/services/api_services/assistant.dart';
 import '../../views/utils/line.dart';
 
-Widget lineupsTab(Game game) {
+Widget lineupsTab(Game game, lineups) {
   return game.status.short == 'NS'
       ? const Padding(
           padding: EdgeInsets.all(15),
@@ -12,7 +11,7 @@ Widget lineupsTab(Game game) {
               "No live score information available now, the match has not started yet."),
         )
       : FutureBuilder(
-          future: Assistant.getLineups(game.fixtureId),
+          future: lineups,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             var lineups = snapshot.data;
             return snapshot.hasData

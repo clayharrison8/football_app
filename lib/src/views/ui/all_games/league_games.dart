@@ -128,64 +128,6 @@ class _LeagueGameDetailsState extends State<LeagueGameDetails> {
                                 ),
                               );
                             });
-
-                        // showDialog<String>(
-                        //   context: context,
-                        //   builder: (BuildContext context) =>
-                        //       AlertDialog(
-                        //     title: Column(
-                        //       children: [
-                        //         Row(
-                        //           mainAxisAlignment: MainAxisAlignment.center,
-                        //           children: [
-                        //             Text(
-                        //               'Calendar',
-                        //               style: TextStyle(
-                        //                   fontWeight: FontWeight.bold, fontSize: 20),
-                        //             ),
-                        //             GestureDetector(
-                        //               onTap: () {
-                        //                 Navigator.pop(context);
-                        //               },
-                        //               child: Icon(Icons.close),
-                        //             ),
-                        //           ],
-                        //         ),
-                        //         const Divider(
-                        //           color: Colors.grey,
-                        //           height: 1,
-                        //           thickness: 1,
-                        //         ),
-                        //       ],
-                        //     ),
-                        //     content: IntrinsicWidth(
-                        //       child: SingleChildScrollView(
-                        //         child: Column(
-                        //           mainAxisSize: MainAxisSize.min,
-                        //           children: <Widget>[
-                        //             ListView.separated(
-                        //               shrinkWrap: true,
-                        //               itemCount: dates.length,
-                        //               itemBuilder:
-                        //                   (BuildContext context, int index) {
-                        //                 return Padding(
-                        //                   padding: const EdgeInsets.all(8),
-                        //                   child: Text(dates[index].date),
-                        //                 );
-                        //               },
-                        //               separatorBuilder:
-                        //                   (BuildContext context, int index) =>
-                        //                       const Divider(
-                        //                 color: Colors.grey,
-                        //                 height: 0,
-                        //               ),
-                        //             ),
-                        //           ],
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   ),
-                        // );
                       },
                       child: const Icon(Icons.calendar_month_outlined),
                     )

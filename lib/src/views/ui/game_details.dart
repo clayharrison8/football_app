@@ -1,4 +1,5 @@
 import 'package:betting_app/src/business_logic/models/fixture/lineup.dart';
+import 'package:betting_app/src/views/ui/league_details.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../business_logic/models/standings/standings.dart';
@@ -22,7 +23,7 @@ class GameDetails extends StatefulWidget {
 class _GameDetailsState extends State<GameDetails> {
   late Future<Standings?> standings;
   late List<Event> events;
-  late List<Lineup> lineups;
+  late Future<List<Lineup>> lineups;
   late List h2h;
 
   @override
@@ -31,7 +32,9 @@ class _GameDetailsState extends State<GameDetails> {
     super.initState();
 
     standings = Assistant.getStandings(widget.gameInfo);
+    lineups = Assistant.getLineups(widget.gameInfo.fixtureId);
 
+    lineups.then((value) => print(value.length));
     // Future.delayed(Duration.zero,() async {
     //   standings = await Assistant.getStandings(widget.gameInfo);
     //   events = await Assistant.getEvents(widget.gameInfo);
@@ -69,7 +72,7 @@ class _GameDetailsState extends State<GameDetails> {
 
     List<Widget> tabViews = [
       eventsTab(widget.gameInfo),
-      lineupsTab(widget.gameInfo),
+      lineupsTab(widget.gameInfo, lineups),
       const Text('Odds'),
       h2hTab(widget.gameInfo),
       standingsTab(widget.gameInfo, standings)
@@ -109,7 +112,7 @@ class _GameDetailsState extends State<GameDetails> {
     for (var i in tabs) {
       tabsList.add(
         Tab(
-          child: Text(i),
+          child: Text(i, style: const TextStyle(fontSize: 12),),
         ),
       );
     }
@@ -142,26 +145,46 @@ class _GameDetailsState extends State<GameDetails> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Row(
-                        children: [
-                          SvgPicture.network(
-                            widget.gameInfo.league.flag,
-                            width: 20,
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => LeagueDetails(widget.gameInfo.league,widget.gameInfo, standings),
                           ),
-                          const SizedBox(width: 10),
-                          Text(
-                            widget.gameInfo.league.country.toUpperCase() +
-                                ': ' +
-                                widget.gameInfo.league.name.toUpperCase() +
-                                ' - ' +
-                                widget.gameInfo.league.round.toUpperCase(),
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                                color: Colors.black, fontSize: 10),
-                          ),
-                        ],
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                SvgPicture.network(
+                                  widget.gameInfo.league.flag,
+                                  width: 15,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  widget.gameInfo.league.country.toUpperCase() +
+                                      ': ',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                      color: Colors.black, fontSize: 10),
+                                ),
+                                Text(
+                                      widget.gameInfo.league.name.toUpperCase() +
+                                      ' - ' +
+                                      widget.gameInfo.league.round.toUpperCase(),
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                      color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                            const Icon(Icons.arrow_forward_ios_rounded, size: 20,)
+                          ],
+                        ),
                       ),
                     ),
                     const Divider(
@@ -188,7 +211,7 @@ class _GameDetailsState extends State<GameDetails> {
                               children: [
                                 Text(
                                   '${widget.gameInfo.date.day.toString()}.${widget.gameInfo.date.month.toString()}.${widget.gameInfo.date.year.toString()} ${widget.gameInfo.date.time}',
-                                  style: TextStyle(fontSize: 12),
+                                  style: const TextStyle(fontSize: 12),
                                 ),
                                 const SizedBox(
                                   height: 5,
@@ -292,7 +315,7 @@ Widget teamLogo(String logo) {
     decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(15)),
         color: Colors.white),
-    padding: EdgeInsets.all(8),
+    padding: const EdgeInsets.all(8),
     child: Image.network(
       logo,
       width: 50,
