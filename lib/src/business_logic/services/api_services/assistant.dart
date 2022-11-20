@@ -130,36 +130,37 @@ class Assistant {
     List events =
         await HttpRequest.getData('fixtures/events?fixture=${game.fixtureId}');
 
-    for (var i = 0; i < events.length; i++) {
-      try {
-        List<Event> eventsList = [];
+    try {
+      List<Event> eventsList = [];
 
-        for (var event in events) {
-          var time = event['time']['elapsed'];
+      for (var event in events) {
+        var gameEvent;
+        var time = event['time']['elapsed'];
 
-          var homeOrAway =
-              event['team']['id'].toString() == game.home.id ? "home" : "away";
+        var homeOrAway =
+            event['team']['id'].toString() == game.home.id ? "home" : "away";
 
-          var half = time <= 45
-              ? '1ST HALF'
-              : (time <= 90 ? '2ND HALF' : 'EXTRA TIME');
+        var half =
+            time <= 45 ? '1ST HALF' : (time <= 90 ? '2ND HALF' : 'EXTRA TIME');
 
-          var type = event['type'];
-          var detail = event['detail'];
-          var player = event['player']['name'];
-          var assister = event['assist']['name'];
+        var type = event['type'];
+        var detail = event['detail'];
+        var player = event['player']['name'];
+        var assister = event['assist']['name'];
+        var extra = event['time']['extra'];
 
-          var gameEvent =
-              Event(half, player, type, detail, assister, homeOrAway, time);
-
+        if (player != null || type == 'Goal') {
+          gameEvent =
+              Event(half, player, type, detail, assister, homeOrAway, time, extra);
           eventsList.add(gameEvent);
         }
 
-        return eventsList;
-      } catch (e, stacktrace) {
-        print(e);
-        print('Stacktrace: ' + stacktrace.toString());
       }
+
+      return eventsList;
+    } catch (e, stacktrace) {
+      print(e);
+      print('Stacktrace: ' + stacktrace.toString());
     }
 
     return [];
@@ -385,22 +386,29 @@ class Assistant {
     var response =
         await HttpRequest.getData('fixtures/lineups?fixture=$fixtureId');
 
-    for (var i in response){
-      List <Player> startXI = [];
-      List <Player> subs = [];
+    for (var i in response) {
+      List<Player> startXI = [];
+      List<Player> subs = [];
 
-      var coach = Coach(
-          i['coach']['id'].toString(), i['coach']['name']);
+      var coach = Coach(i['coach']['id'].toString(), i['coach']['name']);
 
       var team = Team(i['team']['id'].toString(), i['team']['name'],
           i['team']['logo'], false);
 
       for (var a in i['startXI']) {
-        Player player = Player(a['player']['id'].toString(), a['player']['name'], a['player']['number'].toString(), a['player']['pos']);
+        Player player = Player(
+            a['player']['id'].toString(),
+            a['player']['name'],
+            a['player']['number'].toString(),
+            a['player']['pos']);
         startXI.add(player);
       }
       for (var a in i['substitutes']) {
-        Player player = Player(a['player']['id'].toString(), a['player']['name'], a['player']['number'].toString(), a['player']['pos']);
+        Player player = Player(
+            a['player']['id'].toString(),
+            a['player']['name'],
+            a['player']['number'].toString(),
+            a['player']['pos']);
         subs.add(player);
       }
 

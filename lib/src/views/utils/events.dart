@@ -9,7 +9,9 @@ class Events extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> eventDetails = [
       Text(
-        event.time.toString() + "'",
+        event.extra == null
+            ? "${event.time.toString()}'"
+            : "${event.time.toString()}+${event.extra.toString()}'",
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(color: Colors.black, fontSize: 12),
       ),

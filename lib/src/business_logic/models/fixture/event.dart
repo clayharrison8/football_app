@@ -1,6 +1,6 @@
 class Event {
   String half, player, type, detail, assister, homeOrAway;
-  int time;
+  int time, extra;
 
   Event(
     this.half,
@@ -10,5 +10,6 @@ class Event {
     this.assister,
     this.homeOrAway,
     this.time,
+      this.extra
   );
 }
